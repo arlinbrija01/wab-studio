@@ -34,24 +34,83 @@ credenziali. Il modo pulito è una **chiave di distribuzione**: una chiave SSH v
 per questo repository e in sola lettura. Se un domani il server viene compromesso, chi
 entra non può né toccare il codice né raggiungere gli altri tuoi repository.
 
-Sul server:
+La chiave va creata **sul server**, non sul computer di casa: la metà privata non deve
+mai spostarsi. Su GitHub finisce solo la metà pubblica.
+
+### a. Preparare la cartella
+
+`www-data` ha `/var/www` come cartella personale, ma di solito non ha ancora una `.ssh`.
+
+```bash
+sudo mkdir -p /var/www/.ssh
+sudo chown www-data:www-data /var/www/.ssh
+sudo chmod 700 /var/www/.ssh
+```
+
+I permessi `700` non sono un dettaglio: SSH rifiuta di usare una cartella che altri
+utenti possono leggere.
+
+### b. Generare la coppia di chiavi
 
 ```bash
 sudo -u www-data ssh-keygen -t ed25519 -C "vps-wabstudio" -f /var/www/.ssh/id_ed25519 -N ""
+```
+
+`-N ""` crea la chiave **senza passphrase**: il server deve poterla usare da solo, senza
+nessuno che digiti qualcosa. È accettabile perché questa chiave, in sola lettura e valida
+per un solo repository, non apre altre porte.
+
+### c. Far conoscere github.com al server
+
+```bash
+sudo -u www-data bash -c 'ssh-keyscan github.com >> /var/www/.ssh/known_hosts'
+```
+
+Senza questo, il primo collegamento chiede «vuoi fidarti di questo host?» e, non trovando
+nessuno che risponda, il clone si pianta.
+
+### d. Copiare la chiave pubblica
+
+```bash
 sudo cat /var/www/.ssh/id_ed25519.pub
 ```
 
-Copia la riga stampata e su GitHub vai in:
-**Settings del repository → Deploy keys → Add deploy key**. Incollala, dalle un nome
-(`VPS produzione`) e **lascia "Allow write access" spento**.
+Stampa una riga sola, che comincia con `ssh-ed25519` e finisce con `vps-wabstudio`.
+Copiala **tutta**.
 
-Verifica:
+> Il file **senza** `.pub` è la metà privata: non si copia e non si mostra a nessuno.
+
+### e. Registrarla su GitHub
+
+Sulla pagina del repository:
+
+**Settings** (in alto, nella barra del repository — non quelle del tuo profilo) →
+**Deploy keys** nella colonna di sinistra → **Add deploy key**.
+
+| Campo | Cosa mettere |
+|---|---|
+| Title | `VPS produzione` |
+| Key | la riga copiata al punto d |
+| Allow write access | **lasciare spento** |
+
+Il server deve solo leggere il codice. Con la scrittura spenta, anche nel caso peggiore
+nessuno può usare quella chiave per modificare il repository.
+
+Indirizzo diretto: `https://github.com/<utente>/<repo>/settings/keys`
+
+### f. Verificare
 
 ```bash
 sudo -u www-data ssh -T git@github.com
 ```
 
-Deve rispondere `Hi <utente>/<repo>! You've successfully authenticated`.
+Risposta attesa:
+
+```
+Hi <utente>/<repo>! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+Quel «does not provide shell access» non è un errore: è la risposta giusta.
 
 > Se il repository è pubblico, salta tutto questo e usa direttamente l'indirizzo `https://`.
 
