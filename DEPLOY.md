@@ -292,6 +292,82 @@ Se invece si parte da zero, salta questo passo e riempi tutto dal pannello onlin
 
 ---
 
+## Far partire le email del modulo contatti
+
+Il sito usa **Resend**. Il piano gratuito dà 3.000 email al mese e 100 al giorno: per un
+modulo contatti è abbondante, e non chiede la carta di credito.
+
+Finché non c'è una chiave, il modulo **funziona lo stesso**: valida i campi, mostra la
+conferma e scrive la richiesta nel registro del server. Non si perde niente, ma non
+arriva nessuna email — quindi conviene sistemarlo prima di promuovere il sito.
+
+### a. Account e dominio
+
+1. Registrati su [resend.com](https://resend.com) — usa `info@wabstudio.it`, torna utile
+   al punto successivo.
+2. **Domains → Add Domain** e inserisci `wabstudio.it`.
+3. Resend mostra alcuni record DNS da aggiungere dove gestisci il dominio: un **TXT**
+   per SPF e due o tre per **DKIM**. Copiali esattamente come li dà.
+4. Premi **Verify**. Di solito bastano pochi minuti; i DNS possono metterci fino a
+   qualche ora.
+
+Questi record dicono ai server riceventi che Resend è autorizzato a spedire per conto
+del tuo dominio. Senza, le email finiscono nello spam o vengono rifiutate.
+
+> **Scorciatoia senza DNS:** puoi partire subito usando `onboarding@resend.dev` come
+> mittente, ma Resend consegnerà solo all'indirizzo con cui hai registrato l'account.
+> Visto che le richieste arrivano comunque a `info@wabstudio.it`, per cominciare basta.
+> Non va bene a lungo: le email arrivano da un dominio che non è il tuo.
+
+### b. Chiave
+
+**API Keys → Create API Key**, permesso *Sending access*. La chiave si vede **una volta
+sola**: copiala subito.
+
+### c. Configurare il server
+
+In `/var/www/wab-studio/.env.production.local`:
+
+```bash
+RESEND_API_KEY=re_la_tua_chiave
+CONTACT_TO_EMAIL=info@wabstudio.it
+CONTACT_FROM_EMAIL=sito@wabstudio.it
+```
+
+```bash
+sudo systemctl restart wab-studio
+```
+
+Tre indirizzi con tre ruoli diversi:
+
+| Variabile | A cosa serve |
+|---|---|
+| `CONTACT_FROM_EMAIL` | Il mittente. Deve stare sul dominio verificato. Non serve che la casella esista davvero: `sito@` o `noreply@` vanno bene |
+| `CONTACT_TO_EMAIL` | Dove arrivano le richieste. Se lo lasci vuoto, usa l'email impostata nel pannello |
+| *(automatico)* | Il `Reply-To` è l'indirizzo di chi ha scritto: rispondi dalla tua casella e la risposta va a lui |
+
+### d. Provare
+
+Compila il modulo dal sito vero e controlla che l'email arrivi. Se non arriva:
+
+```bash
+sudo journalctl -u wab-studio -n 30 | grep contact
+```
+
+| Nel registro | Cosa vuol dire |
+|---|---|
+| `RESEND_API_KEY non impostata` | Il file non viene letto: controlla nome e permessi |
+| `Resend: ... domain is not verified` | Il dominio non è ancora verificato, o il mittente è su un altro dominio |
+| Niente, ma l'email non arriva | Guarda lo spam, e la scheda **Logs** su Resend: dice se è partita e cosa ha risposto il destinatario |
+
+### Se preferisci un altro fornitore
+
+Il codice che invia sta tutto in `app/api/contact/route.ts`, una ventina di righe.
+Alternative gratuite: **Brevo** (300 email al giorno), **MailerSend** (3.000 al mese),
+oppure l'SMTP del tuo hosting con `nodemailer`. Cambia solo quella funzione.
+
+---
+
 ## Aggiornare il sito in seguito
 
 ```bash
