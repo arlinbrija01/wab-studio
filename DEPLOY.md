@@ -27,18 +27,46 @@ sudo apt-get install -y nodejs nginx git
 node -v
 ```
 
-## 2. Prendere il codice
+## 2. Dare al server l'accesso al repository
+
+Se il repository è **privato** — ed è giusto che lo sia — il server non può clonarlo senza
+credenziali. Il modo pulito è una **chiave di distribuzione**: una chiave SSH valida solo
+per questo repository e in sola lettura. Se un domani il server viene compromesso, chi
+entra non può né toccare il codice né raggiungere gli altri tuoi repository.
+
+Sul server:
+
+```bash
+sudo -u www-data ssh-keygen -t ed25519 -C "vps-wabstudio" -f /var/www/.ssh/id_ed25519 -N ""
+sudo cat /var/www/.ssh/id_ed25519.pub
+```
+
+Copia la riga stampata e su GitHub vai in:
+**Settings del repository → Deploy keys → Add deploy key**. Incollala, dalle un nome
+(`VPS produzione`) e **lascia "Allow write access" spento**.
+
+Verifica:
+
+```bash
+sudo -u www-data ssh -T git@github.com
+```
+
+Deve rispondere `Hi <utente>/<repo>! You've successfully authenticated`.
+
+> Se il repository è pubblico, salta tutto questo e usa direttamente l'indirizzo `https://`.
+
+## 3. Prendere il codice
 
 ```bash
 sudo mkdir -p /var/www && cd /var/www
-sudo git clone <INDIRIZZO-DEL-REPO> wab-studio
+sudo -u www-data git clone git@github.com:TUO-UTENTE/wab-studio.git
 cd wab-studio
-sudo npm ci
+sudo -u www-data npm ci
 ```
 
 `data/` e `public/uploads/` non sono nel repository: nascono al primo avvio.
 
-## 3. Credenziali e variabili
+## 4. Credenziali e variabili
 
 Genera le credenziali del pannello **qui sul server**, non riusare quelle di sviluppo:
 
@@ -75,7 +103,7 @@ sudo chown www-data:www-data .env.production.local
 > **Annota l'indirizzo del pannello.** Non è linkato da nessuna parte e non c'è modo di
 > recuperarlo se non leggendo `ADMIN_PATH`.
 
-## 4. Costruire
+## 5. Costruire
 
 ```bash
 sudo -u www-data npm run build
@@ -90,7 +118,7 @@ sudo mkdir -p data public/uploads
 sudo chown -R www-data:www-data /var/www/wab-studio/data /var/www/wab-studio/public/uploads
 ```
 
-## 5. Tenerlo acceso
+## 6. Tenerlo acceso
 
 ```bash
 sudo nano /etc/systemd/system/wab-studio.service
@@ -125,7 +153,7 @@ curl -I http://127.0.0.1:3000/it
 > `WorkingDirectory` deve essere la radice del progetto: l'archivio dei contenuti è
 > risolto a partire da lì.
 
-## 6. Nginx
+## 7. Nginx
 
 ```bash
 sudo nano /etc/nginx/sites-available/wab-studio
@@ -162,7 +190,7 @@ sudo nginx -t && sudo systemctl reload nginx
 `X-Forwarded-For` serve anche al freno sui tentativi di accesso al pannello: senza, tutti
 i tentativi sembrano arrivare dallo stesso indirizzo.
 
-## 7. HTTPS
+## 8. HTTPS
 
 ```bash
 sudo apt-get install -y certbot python3-certbot-nginx
@@ -172,7 +200,7 @@ sudo certbot --nginx -d wabstudio.it -d www.wabstudio.it
 **Non è opzionale:** in produzione il cookie di sessione del pannello viaggia solo su
 HTTPS. Senza certificato il login non funziona.
 
-## 8. Portare i contenuti già inseriti in locale
+## 9. Portare i contenuti già inseriti in locale
 
 Se il sito è già stato riempito dal pannello sul computer di sviluppo, quei contenuti
 **non sono nel repository**. Si copiano a parte, dal computer locale:
@@ -193,7 +221,7 @@ sudo systemctl restart wab-studio
 
 Se invece si parte da zero, salta questo passo e riempi tutto dal pannello online.
 
-## 9. Ultimi passi
+## 10. Ultimi passi
 
 1. Apri `https://wabstudio.it` e controlla che il sito risponda in italiano e in tedesco.
 2. Entra nel pannello sull'indirizzo segreto e guarda il **Riepilogo**: elenca cosa manca.
