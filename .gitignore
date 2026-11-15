@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+.env*.local
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+
+# Contenuti modificati dal pannello e immagini caricate.
+# Vivono sul server, non nel repository: falli entrare nei backup, non in git.
+/data
+/public/uploads

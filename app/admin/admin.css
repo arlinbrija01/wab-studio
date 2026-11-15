@@ -1,0 +1,179 @@
+/* ===============================================================
+   Stili del pannello.
+   Foglio indipendente da quello del sito: il pannello non eredita
+   né i colori né le regole di base della parte pubblica, così le
+   due interfacce non si pestano i piedi.
+   `source(none)` + `@source './'` limitano la scansione di Tailwind
+   a questa cartella: il CSS del pannello resta piccolo.
+   =============================================================== */
+
+@import 'tailwindcss' source(none);
+@source './';
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, 'SF Mono', Menlo, monospace;
+  --color-brand: #2f6bff;
+}
+
+body {
+  background: #f6f6f7;
+  color: #18181b;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid #2f6bff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@layer components {
+  .admin-card {
+    background: #fff;
+    border: 1px solid #e4e4e7;
+    border-radius: 14px;
+  }
+
+  .admin-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #52525b;
+    margin-bottom: 0.4rem;
+  }
+
+  .admin-input {
+    width: 100%;
+    border: 1px solid #d4d4d8;
+    border-radius: 9px;
+    background: #fff;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: #18181b;
+    font-family: inherit;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .admin-input:focus {
+    outline: none;
+    border-color: #2f6bff;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.15);
+  }
+
+  .admin-input::placeholder {
+    color: #a1a1aa;
+  }
+
+  textarea.admin-input {
+    resize: vertical;
+    min-height: 5.5rem;
+  }
+
+  .admin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 9px;
+    padding: 0.55rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .admin-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .admin-btn-primary {
+    background: #18181b;
+    color: #fff;
+  }
+  .admin-btn-primary:hover:not(:disabled) {
+    background: #2f6bff;
+  }
+
+  .admin-btn-ghost {
+    background: #fff;
+    border-color: #d4d4d8;
+    color: #18181b;
+  }
+  .admin-btn-ghost:hover:not(:disabled) {
+    border-color: #18181b;
+  }
+
+  .admin-btn-danger {
+    background: #fff;
+    border-color: #fca5a5;
+    color: #b91c1c;
+  }
+  .admin-btn-danger:hover:not(:disabled) {
+    background: #fef2f2;
+  }
+
+  .admin-btn-sm {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 7px;
+  }
+
+  .admin-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .admin-chip-on {
+    background: #dcfce7;
+    color: #15803d;
+  }
+  .admin-chip-off {
+    background: #f4f4f5;
+    color: #71717a;
+  }
+  .admin-chip-warn {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .admin-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-radius: 9px;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.875rem;
+    color: #3f3f46;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .admin-nav-item:hover {
+    background: #ececef;
+  }
+  .admin-nav-item[data-active='true'] {
+    background: #18181b;
+    color: #fff;
+  }
+}

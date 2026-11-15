@@ -1,0 +1,13 @@
+# Fine riga normalizzate: nel repository sempre LF, così il server Linux
+# riceve i file nel formato giusto a prescindere da dove sono stati scritti.
+* text=auto eol=lf
+
+# File binari: nessuna conversione.
+*.woff2 binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.webp  binary
+*.avif  binary
+*.gif   binary
+*.ico   binary

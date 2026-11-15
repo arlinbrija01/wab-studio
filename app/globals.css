@@ -1,0 +1,287 @@
+@import 'tailwindcss';
+@import 'lenis/dist/lenis.css';
+
+/* ============================================================
+   DESIGN SYSTEM — WAB Studio
+   I colori di base stanno qui. Cambiando questi valori cambia
+   tutto il sito, perché ogni sezione li usa tramite variabili.
+   ============================================================ */
+
+@theme {
+  /* Scuro */
+  --color-ink: #050507;
+  --color-ink-soft: #0d0d12;
+  --color-ink-line: #ffffff1a;
+
+  /* Chiaro */
+  --color-paper: #f4f4f6;
+  --color-paper-pure: #ffffff;
+  --color-paper-line: #0505071a;
+
+  /* Accento */
+  --color-accent: #2f6bff;
+  --color-accent-soft: #7aa2ff;
+  --color-accent-deep: #1b3fa8;
+
+  /* Testo */
+  --color-fg-dark: #f7f7f9;
+  --color-fg-dark-muted: #9a9aa8;
+  --color-fg-light: #0a0a0c;
+  --color-fg-light-muted: #63636f;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+/* ------------------------------------------------------------
+   Temi di sezione — ogni <section data-theme="..."> porta con sé
+   il proprio fondo e i propri colori di testo. È così che il sito
+   alterna blocchi neri e blocchi bianchi mentre si scorre.
+   ------------------------------------------------------------ */
+
+[data-theme='dark'] {
+  --bg: var(--color-ink);
+  --bg-elevated: var(--color-ink-soft);
+  --fg: var(--color-fg-dark);
+  --fg-muted: var(--color-fg-dark-muted);
+  --line: var(--color-ink-line);
+  --btn-fg: var(--color-ink);
+  --btn-bg: var(--color-fg-dark);
+}
+
+[data-theme='light'] {
+  --bg: var(--color-paper);
+  --bg-elevated: var(--color-paper-pure);
+  --fg: var(--color-fg-light);
+  --fg-muted: var(--color-fg-light-muted);
+  --line: var(--color-paper-line);
+  --btn-fg: var(--color-paper-pure);
+  --btn-bg: var(--color-fg-light);
+}
+
+[data-theme='paper'] {
+  --bg: var(--color-paper-pure);
+  --bg-elevated: var(--color-paper);
+  --fg: var(--color-fg-light);
+  --fg-muted: var(--color-fg-light-muted);
+  --line: var(--color-paper-line);
+  --btn-fg: var(--color-paper-pure);
+  --btn-bg: var(--color-fg-light);
+}
+
+/* ------------------------------------------------------------
+   Base
+   ------------------------------------------------------------ */
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto; /* lo scorrimento morbido lo gestisce Lenis */
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-fg-dark);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------
+   Tipografia — scala fluida, serrata, in stile Apple
+   ------------------------------------------------------------ */
+
+@utility display-xl {
+  font-size: clamp(2.75rem, 10vw, 9.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+}
+
+@utility display-lg {
+  font-size: clamp(2.25rem, 6.5vw, 5.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.038em;
+  font-weight: 600;
+}
+
+@utility display-md {
+  font-size: clamp(1.75rem, 4vw, 3.25rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+@utility display-sm {
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  line-height: 1.18;
+  letter-spacing: -0.022em;
+  font-weight: 600;
+}
+
+@utility lead {
+  font-size: clamp(1.05rem, 1.55vw, 1.4rem);
+  line-height: 1.5;
+  letter-spacing: -0.012em;
+  font-weight: 400;
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------
+   Layout
+   ------------------------------------------------------------ */
+
+@utility shell {
+  width: 100%;
+  max-width: 88rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (min-width: 768px) {
+    padding-inline: 2.5rem;
+  }
+  @media (min-width: 1280px) {
+    padding-inline: 4rem;
+  }
+}
+
+@utility section-pad {
+  padding-block: clamp(5rem, 12vh, 10rem);
+}
+
+@utility themed {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+/* Linea sottile che separa i blocchi */
+@utility hairline {
+  height: 1px;
+  width: 100%;
+  background-color: var(--line);
+}
+
+/* ------------------------------------------------------------
+   Componenti ricorrenti
+   ------------------------------------------------------------ */
+
+@utility btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  padding: 0.9rem 1.6rem;
+  transition:
+    background-color 0.35s var(--ease-out-expo),
+    color 0.35s var(--ease-out-expo),
+    border-color 0.35s var(--ease-out-expo),
+    transform 0.35s var(--ease-out-expo);
+  will-change: transform;
+}
+
+/* Testo che si rivela riga per riga (usato con SplitText) */
+.line-mask {
+  overflow: hidden;
+  display: block;
+}
+
+/* Nasconde i contenuti animati prima che GSAP li prenda in carico,
+   ma solo quando JS è attivo: senza JS resta tutto visibile. */
+[data-js] [data-anim='hidden'] {
+  opacity: 0;
+}
+
+/* Nessuna animazione per chi la preferisce ridotta */
+@media (prefers-reduced-motion: reduce) {
+  [data-js] [data-anim='hidden'] {
+    opacity: 1 !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Griglia decorativa sottile */
+.grid-lines {
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 6rem 6rem;
+}
+
+/* Sfumatura in basso sulle sezioni scure */
+.fade-bottom::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 9rem;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+}
+
+/* Scrollbar discreta */
+@media (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #8884;
+    border-radius: 99px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #8888;
+    background-clip: content-box;
+  }
+}
